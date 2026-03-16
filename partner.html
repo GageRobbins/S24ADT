@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit a Referral — Secure24 ADT Partner Program</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f8f9fa; font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    
+    .hero {
+      background: linear-gradient(135deg, #080c0f, #0f1519);
+      color: white;
+      padding: 40px 24px 32px;
+      text-align: center;
+    }
+
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 24px;
+      color: #00e5a0;
+      margin-bottom: 8px;
+    }
+
+    .hero h1 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .hero p { color: #7a9ab0; font-size: 14px; line-height: 1.5; }
+
+    .reward-banner {
+      background: linear-gradient(135deg, #00e5a015, #0088ff10);
+      border: 1px solid #00e5a030;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 24px;
+      text-align: center;
+    }
+
+    .reward-amount {
+      font-family: 'DM Serif Display', serif;
+      font-size: 42px;
+      color: #00e5a0;
+      line-height: 1;
+    }
+
+    .reward-label { font-size: 13px; color: #5a7080; margin-top: 4px; }
+    .reward-note { font-size: 12px; color: #00e5a0; margin-top: 8px; font-weight: 600; }
+
+    .form-card {
+      background: white;
+      margin: 0 16px 24px;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+    }
+
+    .form-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #1a2530;
+    }
+
+    .field { margin-bottom: 16px; }
+    
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #5a7080;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid #e8edf2;
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: 'DM Sans', sans-serif;
+      color: #1a2530;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+
+    input:focus { outline: none; border-color: #00e5a0; }
+
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
+      background: #00e5a0;
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .btn-submit:active { transform: scale(0.98); }
+
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 60px 24px;
+    }
+
+    .success-icon { font-size: 64px; margin-bottom: 20px; }
+    .success-title { font-size: 24px; font-weight: 700; color: #1a2530; margin-bottom: 8px; }
+    .success-msg { font-size: 15px; color: #5a7080; line-height: 1.6; }
+
+    .how-it-works {
+      background: white;
+      margin: 0 16px 24px;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+    }
+
+    .how-title { font-size: 15px; font-weight: 700; margin-bottom: 16px; color: #1a2530; }
+
+    .step {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 16px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      width: 28px; height: 28px;
+      background: #00e5a015;
+      border: 1px solid #00e5a030;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #00e5a0;
+      flex-shrink: 0;
+    }
+
+    .step-text { font-size: 13px; color: #5a7080; line-height: 1.5; padding-top: 4px; }
+    .step-text strong { color: #1a2530; }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="logo">Secure24 ADT</div>
+  <h1>Partner Referral Program</h1>
+  <p>Submit a new homeowner's info and earn your referral reward.</p>
+</div>
+
+<div class="reward-banner">
+  <div class="reward-amount">$200</div>
+  <div class="reward-label">per installed referral</div>
+  <div class="reward-note">+ We waive ALL equipment & installation fees for your client</div>
+</div>
+
+<div id="form-section">
+  <div class="form-card">
+    <div class="form-title">Submit a New Referral</div>
+    <div class="field">
+      <label>Client Full Name *</label>
+      <input type="text" id="customer_name" placeholder="Jane Smith" required>
+    </div>
+    <div class="field">
+      <label>Client Phone Number *</label>
+      <input type="tel" id="customer_phone" placeholder="(555) 000-0000" required>
+    </div>
+    <div class="field">
+      <label>Client Email</label>
+      <input type="email" id="customer_email" placeholder="jane@email.com">
+    </div>
+    <div class="field">
+      <label>New Home Address *</label>
+      <input type="text" id="customer_address" placeholder="123 Main St, Austin TX 78701" required>
+    </div>
+    <button class="btn-submit" onclick="submitReferral()">Submit Referral →</button>
+  </div>
+
+  <div class="how-it-works">
+    <div class="how-title">How it works</div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text">Submit your client's info above after closing.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text">We reach out to schedule their <strong>free installation</strong> — zero equipment or installation fees.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-text">Once installed, <strong>you receive $200</strong>. No caps, no limits.</div>
+    </div>
+  </div>
+</div>
+
+<div class="success-screen" id="success-screen">
+  <div class="success-icon">✅</div>
+  <div class="success-title">Referral Submitted!</div>
+  <div class="success-msg">We'll reach out to your client shortly to schedule their free installation.<br><br>Your $200 will be processed once they're installed. Thank you!</div>
+</div>
+
+<script>
+  // Get referral code from URL
+  const pathParts = window.location.pathname.split('/');
+  const referralCode = pathParts[pathParts.length - 1];
+
+  async function submitReferral() {
+    const name = document.getElementById('customer_name').value.trim();
+    const phone = document.getElementById('customer_phone').value.trim();
+    const address = document.getElementById('customer_address').value.trim();
+
+    if (!name || !phone || !address) {
+      alert('Please fill in the required fields.');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/partner/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          referral_code: referralCode,
+          customer_name: name,
+          customer_phone: phone,
+          customer_email: document.getElementById('customer_email').value.trim(),
+          customer_address: address
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('form-section').style.display = 'none';
+        document.getElementById('success-screen').style.display = 'block';
+      } else {
+        alert(data.error || 'Submission failed. Please try again.');
+      }
+    } catch (err) {
+      alert('Connection error. Please try again.');
+    }
+  }
+</script>
+</body>
+</html>

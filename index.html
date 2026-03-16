@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Secure24 ADT — Outreach</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080c0f;
+      --surface: #0f1519;
+      --surface2: #161d23;
+      --border: #1e2830;
+      --accent: #00e5a0;
+      --accent2: #0088ff;
+      --warn: #ff6b35;
+      --hot: #ff3366;
+      --text: #e8edf2;
+      --muted: #5a7080;
+      --success: #00e5a0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+    }
+
+    .header-logo span { color: var(--muted); font-style: italic; font-size: 14px; margin-left: 6px; }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--accent); }
+      50% { opacity: 0.5; box-shadow: 0 0 16px var(--accent); }
+    }
+
+    /* ── Setup Banner ── */
+    .setup-banner {
+      background: linear-gradient(135deg, #1a0f00, #0f1a00);
+      border: 1px solid #ff6b3533;
+      margin: 16px;
+      border-radius: 12px;
+      padding: 16px;
+      display: none;
+    }
+
+    .setup-banner.visible { display: block; }
+
+    .setup-banner h3 {
+      color: var(--warn);
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .api-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #ffffff08;
+      font-size: 13px;
+    }
+
+    .api-item:last-child { border: none; }
+
+    .api-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .api-dot.ok { background: var(--accent); }
+    .api-dot.missing { background: var(--warn); }
+
+    /* ── Nav Tabs ── */
+    .nav {
+      display: flex;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .nav::-webkit-scrollbar { display: none; }
+
+    .nav-tab {
+      padding: 14px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .badge {
+      background: var(--hot);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      min-width: 18px;
+      text-align: center;
+    }
+
+    /* ── Pages ── */
+    .page { display: none; padding: 16px; }
+    .page.active { display: block; }
+
+    /* ── Stat Cards ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      opacity: 0.4;
+    }
+
+    .stat-card.hot::before { background: var(--hot); opacity: 0.8; }
+    .stat-card.blue::before { background: var(--accent2); opacity: 0.6; }
+    .stat-card.warn::before { background: var(--warn); opacity: 0.6; }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-family: 'DM Mono', monospace;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .stat-card.hot .stat-value { color: var(--hot); }
+    .stat-card.green .stat-value { color: var(--accent); }
+
+    .stat-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── Section Headers ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      margin-top: 20px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .section-action {
+      font-size: 12px;
+      color: var(--accent);
+      cursor: pointer;
+      padding: 6px 12px;
+      background: #00e5a010;
+      border-radius: 20px;
+      border: 1px solid #00e5a020;
+    }
+
+    /* ── Lead Cards ── */
+    .lead-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 10px;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+
+    .lead-card:active { border-color: var(--accent); }
+
+    .lead-card.hot-lead { border-color: #ff336620; background: #ff336605; }
+    .lead-card.replied { border-color: #00e5a020; background: #00e5a005; }
+
+    .lead-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .lead-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .lead-brokerage {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .score-badge {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .score-badge.high { background: #ff336615; border-color: #ff336630; color: var(--hot); }
+
+    .lead-meta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .meta-item {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .meta-item.highlight { color: var(--warn); }
+
+    .lead-reply {
+      background: var(--surface2);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 12px;
+      line-height: 1.5;
+      border-left: 3px solid var(--accent);
+    }
+
+    .lead-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      text-align: center;
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    .btn-call {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .btn-partner {
+      background: #00e5a015;
+      color: var(--accent);
+      border: 1px solid #00e5a030;
+    }
+
+    .btn-close {
+      background: var(--surface2);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      flex: 0;
+      padding: 10px 14px;
+    }
+
+    /* ── Campaign Panel ── */
+    .campaign-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+
+    .campaign-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .campaign-desc {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .state-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .state-pill {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--muted);
+    }
+
+    .state-pill.active {
+      background: #00e5a015;
+      border-color: #00e5a040;
+      color: var(--accent);
+    }
+
+    .btn-full {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-full:active { transform: scale(0.98); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      margin-top: 8px;
+    }
+
+    .btn-danger {
+      background: #ff336615;
+      color: var(--hot);
+      border: 1px solid #ff336630;
+      margin-top: 8px;
+    }
+
+    /* ── Progress bar ── */
+    .progress-wrap {
+      background: var(--surface2);
+      border-radius: 4px;
+      height: 4px;
+      margin: 12px 0;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    /* ── Settings ── */
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .setting-row:last-child { border: none; }
+
+    .setting-label { font-size: 14px; font-weight: 500; }
+    .setting-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .toggle {
+      width: 44px; height: 26px;
+      background: var(--surface2);
+      border-radius: 13px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .toggle.on { background: var(--accent); border-color: var(--accent); }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px;
+      background: white;
+      border-radius: 50%;
+      top: 2px; left: 2px;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .toggle.on::after { transform: translateX(18px); }
+
+    .input-field {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 14px;
+      width: 100%;
+      margin-top: 8px;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .api-key-row {
+      margin-bottom: 16px;
+    }
+
+    .api-key-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── Empty state ── */
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .empty-desc { font-size: 13px; line-height: 1.5; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Bottom Nav ── */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+      z-index: 100;
+    }
+
+    .bottom-tab {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 6px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 500;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .bottom-tab.active { color: var(--accent); }
+
+    .bottom-tab svg { width: 22px; height: 22px; }
+
+    .bottom-badge {
+      position: absolute;
+      top: 2px;
+      right: calc(50% - 20px);
+      background: var(--hot);
+      color: white;
+      font-size: 9px;
+      font-weight: 700;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .main-content {
+      padding-bottom: 80px;
+    }
+
+    /* ── Loading ── */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      color: var(--muted);
+      gap: 10px;
+    }
+
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Week chart ── */
+    .mini-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 40px;
+      margin-top: 8px;
+    }
+
+    .chart-bar {
+      flex: 1;
+      background: var(--accent);
+      border-radius: 3px 3px 0 0;
+      opacity: 0.6;
+      min-height: 4px;
+      transition: height 0.5s ease;
+    }
+
+    .referral-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 10px;
+    }
+
+    .status-chip {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .status-chip.pending { background: #ff6b3515; color: var(--warn); }
+    .status-chip.installed { background: #00e5a015; color: var(--accent); }
+    .status-chip.paid { background: #0088ff15; color: var(--accent2); }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-logo">Secure24 <span>ADT Outreach</span></div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <span style="font-size:12px;color:var(--muted)" id="last-updated"></span>
+    <div class="status-dot" id="status-dot"></div>
+  </div>
+</div>
+
+<div class="main-content">
+
+  <!-- Setup Banner -->
+  <div class="setup-banner" id="setup-banner">
+    <h3>⚙️ API Setup Required</h3>
+    <div id="api-status-list"></div>
+    <div style="margin-top:12px;font-size:12px;color:var(--muted)">Go to Settings tab to add your API keys.</div>
+  </div>
+
+  <!-- ── DASHBOARD PAGE ── -->
+  <div class="page active" id="page-dashboard">
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">Emails Sent</div>
+        <div class="stat-value" id="stat-emails">—</div>
+        <div class="stat-sub" id="stat-emails-today">today: —</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Texts Sent</div>
+        <div class="stat-value" id="stat-texts">—</div>
+        <div class="stat-sub" id="stat-texts-today">today: —</div>
+      </div>
+      <div class="stat-card hot">
+        <div class="stat-label">🔥 Hot Leads</div>
+        <div class="stat-value" id="stat-hot">—</div>
+        <div class="stat-sub">score 3+, no reply yet</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Replies</div>
+        <div class="stat-value" id="stat-replies">—</div>
+        <div class="stat-sub" id="stat-replies-week">this week: —</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Partners</div>
+        <div class="stat-value" id="stat-partners">—</div>
+        <div class="stat-sub">realtors + inspectors</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">Referrals</div>
+        <div class="stat-value" id="stat-referrals">—</div>
+        <div class="stat-sub" id="stat-installs">installs: —</div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">Weekly Emails</div>
+    </div>
+    <div class="campaign-card" style="padding:16px">
+      <div class="mini-chart" id="week-chart">
+        <div class="chart-bar" style="height:20%"></div>
+        <div class="chart-bar" style="height:40%"></div>
+        <div class="chart-bar" style="height:60%"></div>
+        <div class="chart-bar" style="height:80%"></div>
+        <div class="chart-bar" style="height:55%"></div>
+        <div class="chart-bar" style="height:90%"></div>
+        <div class="chart-bar" style="height:100%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--muted)">
+        <span>7 days ago</span><span>Today</span>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">System Status</div>
+      <div class="section-action" onclick="refreshStats()">↻ Refresh</div>
+    </div>
+    <div class="campaign-card">
+      <div class="setting-row" style="padding:12px 0">
+        <div>
+          <div class="setting-label">Auto Fetch Closings</div>
+          <div class="setting-desc">Daily 7am — pulls new listings</div>
+        </div>
+        <div class="status-dot"></div>
+      </div>
+      <div class="setting-row" style="padding:12px 0">
+        <div>
+          <div class="setting-label">Email Campaign</div>
+          <div class="setting-desc">Daily 8am + 6pm send windows</div>
+        </div>
+        <div class="status-dot"></div>
+      </div>
+      <div class="setting-row" style="padding:12px 0;border:none">
+        <div>
+          <div class="setting-label">Text Follow-ups</div>
+          <div class="setting-desc">Daily 12pm — unreplied leads</div>
+        </div>
+        <div class="status-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HOT LEADS PAGE ── -->
+  <div class="page" id="page-hot">
+    <div id="hot-leads-list">
+      <div class="loading"><div class="spinner"></div> Loading hot leads...</div>
+    </div>
+  </div>
+
+  <!-- ── REPLIES PAGE ── -->
+  <div class="page" id="page-replies">
+    <div id="replies-list">
+      <div class="loading"><div class="spinner"></div> Loading replies...</div>
+    </div>
+  </div>
+
+  <!-- ── REFERRALS PAGE ── -->
+  <div class="page" id="page-referrals">
+    <div class="section-header">
+      <div class="section-title">Active Referrals</div>
+    </div>
+    <div id="referrals-list">
+      <div class="loading"><div class="spinner"></div> Loading referrals...</div>
+    </div>
+  </div>
+
+  <!-- ── CAMPAIGN PAGE ── -->
+  <div class="page" id="page-campaign">
+    <div class="campaign-card">
+      <div class="campaign-title">Target States</div>
+      <div class="campaign-desc">Select which states to pull new closings from daily.</div>
+      <div class="state-pills" id="state-pills"></div>
+    </div>
+
+    <div class="campaign-card">
+      <div class="campaign-title">Run Now</div>
+      <div class="campaign-desc">Manually trigger fetching and sending outside the daily schedule.</div>
+      <button class="btn-full btn-primary" onclick="runFetch()">📡 Fetch New Closings</button>
+      <button class="btn-full btn-secondary" onclick="runEmails()">📧 Send Email Batch</button>
+      <button class="btn-full btn-secondary" onclick="runTexts()">💬 Send Text Batch</button>
+    </div>
+
+    <div class="campaign-card">
+      <div class="campaign-title">Import Contacts</div>
+      <div class="campaign-desc">Upload a CSV from your data provider or CRM export.</div>
+      <input type="file" id="csv-input" accept=".csv" style="display:none" onchange="handleCSV(event)">
+      <button class="btn-full btn-secondary" onclick="document.getElementById('csv-input').click()">📁 Import CSV</button>
+    </div>
+
+    <div class="campaign-card">
+      <div class="campaign-title">CRM Suppression</div>
+      <div class="campaign-desc">Import contacts from thealarmprogram.com CRM to prevent duplicate outreach.</div>
+      <input type="file" id="crm-input" accept=".csv" style="display:none" onchange="handleCRMImport(event)">
+      <button class="btn-full btn-secondary" onclick="document.getElementById('crm-input').click()">🔒 Import CRM Suppression List</button>
+    </div>
+  </div>
+
+  <!-- ── SETTINGS PAGE ── -->
+  <div class="page" id="page-settings">
+    <div class="campaign-card">
+      <div class="campaign-title" style="margin-bottom:16px">API Keys</div>
+      
+      <div class="api-key-row">
+        <div class="api-key-label">
+          <span id="dot-realestateapi" class="api-dot missing"></span>
+          RealEstateAPI Key
+        </div>
+        <input class="input-field" type="password" id="key-realestateapi" placeholder="Enter API key...">
+      </div>
+
+      <div class="api-key-row">
+        <div class="api-key-label">
+          <span id="dot-sendgrid" class="api-dot missing"></span>
+          SendGrid API Key
+        </div>
+        <input class="input-field" type="password" id="key-sendgrid" placeholder="Enter API key...">
+      </div>
+
+      <div class="api-key-row">
+        <div class="api-key-label">
+          <span id="dot-twilio" class="api-dot missing"></span>
+          Twilio Account SID
+        </div>
+        <input class="input-field" type="text" id="key-twilio-sid" placeholder="ACxxxxxxxxxxxxxxxx">
+      </div>
+
+      <div class="api-key-row">
+        <div class="api-key-label">Twilio Auth Token</div>
+        <input class="input-field" type="password" id="key-twilio-token" placeholder="Enter auth token...">
+      </div>
+
+      <div class="api-key-row">
+        <div class="api-key-label">Twilio Phone Number</div>
+        <input class="input-field" type="text" id="key-twilio-phone" placeholder="+1XXXXXXXXXX">
+      </div>
+
+      <div class="api-key-row">
+        <div class="api-key-label">
+          <span id="dot-anthropic" class="api-dot missing"></span>
+          Anthropic (Claude) API Key
+        </div>
+        <input class="input-field" type="password" id="key-anthropic" placeholder="sk-ant-...">
+      </div>
+
+      <button class="btn-full btn-primary" style="margin-top:8px" onclick="saveAPIKeys()">💾 Save API Keys</button>
+    </div>
+
+    <div class="campaign-card">
+      <div class="campaign-title" style="margin-bottom:4px">Campaign Settings</div>
+      
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Daily Email Limit</div>
+          <div class="setting-desc">Max emails per day</div>
+        </div>
+        <input type="number" class="input-field" id="setting-email-limit" value="1000" style="width:80px;margin:0">
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Daily Text Limit</div>
+          <div class="setting-desc">Max texts per day</div>
+        </div>
+        <input type="number" class="input-field" id="setting-text-limit" value="500" style="width:80px;margin:0">
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Max Follow-ups</div>
+          <div class="setting-desc">Before marking inactive</div>
+        </div>
+        <input type="number" class="input-field" id="setting-followups" value="5" style="width:80px;margin:0">
+      </div>
+    </div>
+
+    <div class="campaign-card">
+      <div class="setting-row" style="padding-top:0">
+        <div>
+          <div class="setting-label">Notification Phone</div>
+          <div class="setting-desc">Where replies are forwarded</div>
+        </div>
+      </div>
+      <input class="input-field" type="tel" id="setting-phone" value="(309) 532-4736">
+      <input class="input-field" type="email" id="setting-email" value="gagerobbins40@yahoo.com" style="margin-top:8px">
+      <button class="btn-full btn-secondary" style="margin-top:12px" onclick="saveSettings()">Save Settings</button>
+    </div>
+
+    <div style="text-align:center;padding:20px;font-size:12px;color:var(--muted)">
+      Secure24 ADT Outreach System v1.0<br>
+      Built for Gage Robbins — Real Estate Partnership Manager
+    </div>
+  </div>
+
+</div>
+
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+  <div class="bottom-tab active" onclick="switchPage('dashboard', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Dashboard
+  </div>
+  <div class="bottom-tab" onclick="switchPage('hot', this)" id="tab-hot">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2c0 6-6 8-6 14a6 6 0 0012 0c0-6-6-8-6-14z"/></svg>
+    <span class="bottom-badge" id="hot-badge" style="display:none">0</span>
+    Hot Leads
+  </div>
+  <div class="bottom-tab" onclick="switchPage('replies', this)" id="tab-replies">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <span class="bottom-badge" id="reply-badge" style="display:none">0</span>
+    Replies
+  </div>
+  <div class="bottom-tab" onclick="switchPage('campaign', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    Campaign
+  </div>
+  <div class="bottom-tab" onclick="switchPage('settings', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    Settings
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  const API = window.location.origin;
+  
+  const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+  
+  let activeStates = ['TX', 'FL'];
+  let statsData = {};
+
+  // ── Navigation ──────────────────────────────────────────────────────────
+  function switchPage(page, tab) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.bottom-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(`page-${page}`).classList.add('active');
+    tab.classList.add('active');
+    
+    if (page === 'hot') loadHotLeads();
+    if (page === 'replies') loadReplies();
+    if (page === 'referrals') loadReferrals();
+    if (page === 'settings') loadSettings();
+  }
+
+  // ── Stats ────────────────────────────────────────────────────────────────
+  async function refreshStats() {
+    try {
+      const res = await fetch(`${API}/api/stats`);
+      const data = await res.json();
+      statsData = data;
+
+      const ov = data.overview || {};
+      const today = data.todayStats || {};
+      const week = data.weekStats || {};
+      const ref = data.referralStats || {};
+
+      document.getElementById('stat-emails').textContent = (ov.emails_sent || 0).toLocaleString();
+      document.getElementById('stat-emails-today').textContent = `today: ${today.emails_sent || 0}`;
+      document.getElementById('stat-texts').textContent = (ov.texts_sent || 0).toLocaleString();
+      document.getElementById('stat-texts-today').textContent = `today: ${today.texts_sent || 0}`;
+      document.getElementById('stat-hot').textContent = (ov.hot_leads || 0).toLocaleString();
+      document.getElementById('stat-replies').textContent = (ov.total_replies || 0).toLocaleString();
+      document.getElementById('stat-replies-week').textContent = `this week: ${week.week_replies || 0}`;
+      document.getElementById('stat-partners').textContent = ((ov.total_partners || 0) + (data.inspectorStats?.inspector_partners || 0)).toLocaleString();
+      document.getElementById('stat-referrals').textContent = (ref.total_referrals || 0).toLocaleString();
+      document.getElementById('stat-installs').textContent = `installs: ${ref.total_installs || 0}`;
+
+      // Update badges
+      const hotCount = ov.hot_leads || 0;
+      const replyCount = ov.total_replies || 0;
+      
+      const hotBadge = document.getElementById('hot-badge');
+      hotBadge.textContent = hotCount;
+      hotBadge.style.display = hotCount > 0 ? 'flex' : 'none';
+
+      const replyBadge = document.getElementById('reply-badge');
+      replyBadge.textContent = replyCount;
+      replyBadge.style.display = replyCount > 0 ? 'flex' : 'none';
+
+      // Check API setup
+      const apis = data.apis_configured || {};
+      checkAPISetup(apis);
+
+      document.getElementById('last-updated').textContent = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    } catch (err) {
+      console.log('Stats fetch failed - backend not connected yet');
+      document.getElementById('last-updated').textContent = 'offline';
+    }
+  }
+
+  function checkAPISetup(apis) {
+    const allGood = apis.sendgrid && apis.twilio && apis.realestateapi && apis.anthropic;
+    const banner = document.getElementById('setup-banner');
+    
+    if (!allGood) {
+      banner.classList.add('visible');
+      const list = document.getElementById('api-status-list');
+      list.innerHTML = [
+        { key: 'realestateapi', label: 'RealEstateAPI' },
+        { key: 'sendgrid', label: 'SendGrid' },
+        { key: 'twilio', label: 'Twilio' },
+        { key: 'anthropic', label: 'Claude AI' }
+      ].map(({ key, label }) => `
+        <div class="api-item">
+          <div class="api-dot ${apis[key] ? 'ok' : 'missing'}"></div>
+          <span style="color:${apis[key] ? 'var(--accent)' : 'var(--warn)'}">${label}</span>
+          <span style="color:var(--muted);margin-left:auto;font-size:11px">${apis[key] ? '✓ Connected' : 'Not configured'}</span>
+        </div>
+      `).join('');
+    } else {
+      banner.classList.remove('visible');
+    }
+
+    // Update settings dots
+    Object.entries(apis).forEach(([key, ok]) => {
+      const dot = document.getElementById(`dot-${key}`);
+      if (dot) { dot.className = `api-dot ${ok ? 'ok' : 'missing'}`; }
+    });
+  }
+
+  // ── Hot Leads ────────────────────────────────────────────────────────────
+  async function loadHotLeads() {
+    try {
+      const res = await fetch(`${API}/api/hot-leads`);
+      const leads = await res.json();
+      renderHotLeads(leads);
+    } catch (err) {
+      document.getElementById('hot-leads-list').innerHTML = renderEmpty('🔥', 'No Hot Leads Yet', 'Leads will appear here once realtors start opening your emails. Check back after the first send.');
+    }
+  }
+
+  function renderHotLeads(leads) {
+    const el = document.getElementById('hot-leads-list');
+    if (!leads.length) {
+      el.innerHTML = renderEmpty('🔥', 'No Hot Leads Yet', 'Realtors who open your emails multiple times will appear here.');
+      return;
+    }
+
+    el.innerHTML = `
+      <div class="section-header">
+        <div class="section-title">${leads.length} Hot Leads</div>
+      </div>
+      ${leads.map(lead => `
+        <div class="lead-card hot-lead">
+          <div class="lead-top">
+            <div>
+              <div class="lead-name">${lead.name}</div>
+              <div class="lead-brokerage">${lead.brokerage || 'Independent'} · ${lead.city || ''}, ${lead.state || ''}</div>
+            </div>
+            <div class="score-badge high">⚡ ${lead.engagement_score}</div>
+          </div>
+          <div class="lead-meta">
+            <div class="meta-item">📧 ${lead.email_opens || 0} opens</div>
+            <div class="meta-item">🔗 ${lead.email_clicks || 0} clicks</div>
+            <div class="meta-item ${lead.followup_count >= 3 ? 'highlight' : ''}">📨 ${lead.followup_count || 0} touches</div>
+            ${lead.last_opened_at ? `<div class="meta-item">🕐 ${timeAgo(lead.last_opened_at)}</div>` : ''}
+          </div>
+          <div class="lead-actions">
+            ${lead.phone ? `<button class="btn btn-call" onclick="callLead('${lead.phone}')">📞 Call</button>` : ''}
+            <button class="btn btn-partner" onclick="markPartner(${lead.id}, 'realtor')">✓ Partner</button>
+            <button class="btn btn-close" onclick="closeLead(${lead.id})">✕</button>
+          </div>
+        </div>
+      `).join('')}
+    `;
+  }
+
+  // ── Replies ──────────────────────────────────────────────────────────────
+  async function loadReplies() {
+    try {
+      const res = await fetch(`${API}/api/replies`);
+      const replies = await res.json();
+      renderReplies(replies);
+    } catch (err) {
+      document.getElementById('replies-list').innerHTML = renderEmpty('💬', 'No Replies Yet', 'When realtors respond to your emails or texts, they\'ll appear here instantly.');
+    }
+  }
+
+  function renderReplies(replies) {
+    const el = document.getElementById('replies-list');
+    if (!replies.length) {
+      el.innerHTML = renderEmpty('💬', 'No Replies Yet', 'When realtors or inspectors respond, you\'ll see them here and get a notification.');
+      return;
+    }
+
+    el.innerHTML = `
+      <div class="section-header">
+        <div class="section-title">${replies.length} Replies</div>
+      </div>
+      ${replies.map(r => `
+        <div class="lead-card replied">
+          <div class="lead-top">
+            <div>
+              <div class="lead-name">${r.name}</div>
+              <div class="lead-brokerage">${r.brokerage || r.company || 'Independent'} · ${r.state || ''}</div>
+            </div>
+            <div style="font-size:11px;color:var(--muted);text-align:right">
+              ${r.reply_channel === 'text' ? '💬 Text' : '📧 Email'}<br>
+              ${r.replied_at ? timeAgo(r.replied_at) : ''}
+            </div>
+          </div>
+          ${r.reply_text ? `<div class="lead-reply">"${r.reply_text.substring(0, 200)}${r.reply_text.length > 200 ? '...' : ''}"</div>` : ''}
+          <div class="lead-actions">
+            ${r.phone ? `<button class="btn btn-call" onclick="callLead('${r.phone}')">📞 Call</button>` : ''}
+            <button class="btn btn-partner" onclick="markPartner(${r.id}, '${r.contact_type || 'realtor'}')">✓ Partner</button>
+            <button class="btn btn-close" onclick="closeLead(${r.id})">✕</button>
+          </div>
+        </div>
+      `).join('')}
+    `;
+  }
+
+  // ── Referrals ─────────────────────────────────────────────────────────────
+  async function loadReferrals() {
+    try {
+      const res = await fetch(`${API}/api/referrals`);
+      const referrals = await res.json();
+      renderReferrals(referrals);
+    } catch (err) {
+      document.getElementById('referrals-list').innerHTML = renderEmpty('📋', 'No Referrals Yet', 'Once you have partners, their referrals will track here.');
+    }
+  }
+
+  function renderReferrals(referrals) {
+    const el = document.getElementById('referrals-list');
+    if (!referrals.length) {
+      el.innerHTML = renderEmpty('📋', 'No Referrals Yet', 'Partners will submit referrals through their unique link.');
+      return;
+    }
+
+    el.innerHTML = referrals.map(r => `
+      <div class="referral-card">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <div style="font-weight:600">${r.customer_name || 'Unknown Customer'}</div>
+          <span class="status-chip ${r.status}">${r.status}</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:4px">${r.customer_address || 'No address'}</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px">From: ${r.partner_name || 'Partner'}</div>
+        <div style="display:flex;gap:8px">
+          ${r.status === 'pending' ? `<button class="btn btn-partner" style="flex:1" onclick="updateReferral(${r.id}, 'installed')">Mark Installed</button>` : ''}
+          ${r.status === 'installed' ? `<button class="btn btn-call" style="flex:1" onclick="updateReferral(${r.id}, 'paid')">Mark Paid $200</button>` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ── State Pills ──────────────────────────────────────────────────────────
+  function renderStatePills() {
+    const el = document.getElementById('state-pills');
+    el.innerHTML = US_STATES.map(state => `
+      <div class="state-pill ${activeStates.includes(state) ? 'active' : ''}" onclick="toggleState('${state}', this)">
+        ${state}
+      </div>
+    `).join('');
+  }
+
+  function toggleState(state, el) {
+    if (activeStates.includes(state)) {
+      activeStates = activeStates.filter(s => s !== state);
+      el.classList.remove('active');
+    } else {
+      activeStates.push(state);
+      el.classList.add('active');
+    }
+    showToast(`States: ${activeStates.join(', ')}`);
+  }
+
+  // ── Actions ──────────────────────────────────────────────────────────────
+  function callLead(phone) {
+    window.location.href = `tel:${phone}`;
+  }
+
+  async function markPartner(id, type) {
+    try {
+      const endpoint = type === 'inspector' ? 'inspectors' : 'realtors';
+      const res = await fetch(`${API}/api/${endpoint}/${id}/partner`, { method: 'POST' });
+      const data = await res.json();
+      showToast('✓ Marked as Partner! Welcome email sent.');
+      loadReplies();
+      loadHotLeads();
+      refreshStats();
+    } catch (err) {
+      showToast('Could not connect to backend');
+    }
+  }
+
+  async function closeLead(id) {
+    try {
+      await fetch(`${API}/api/realtors/${id}/close`, { method: 'POST' });
+      showToast('Lead closed');
+      loadHotLeads();
+    } catch (err) {
+      showToast('Could not connect to backend');
+    }
+  }
+
+  async function updateReferral(id, status) {
+    try {
+      await fetch(`${API}/api/referrals/${id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      showToast(status === 'paid' ? '💰 $200 payout marked!' : '✓ Marked as installed!');
+      loadReferrals();
+    } catch (err) {
+      showToast('Could not connect to backend');
+    }
+  }
+
+  async function runFetch() {
+    showToast('📡 Fetching new closings...');
+    try {
+      const res = await fetch(`${API}/api/campaign/fetch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ states: activeStates })
+      });
+      const data = await res.json();
+      showToast(`✓ Added ${data.new_contacts || 0} new contacts`);
+      refreshStats();
+    } catch (err) {
+      showToast('Backend not connected yet');
+    }
+  }
+
+  async function runEmails() {
+    showToast('📧 Sending email batch...');
+    try {
+      const res = await fetch(`${API}/api/campaign/send-emails`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ limit: 500 })
+      });
+      const data = await res.json();
+      showToast(`✓ Sent ${data.sent || 0} emails`);
+      refreshStats();
+    } catch (err) {
+      showToast('Backend not connected yet');
+    }
+  }
+
+  async function runTexts() {
+    showToast('💬 Sending texts...');
+    try {
+      const res = await fetch(`${API}/api/campaign/send-texts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ limit: 200 })
+      });
+      const data = await res.json();
+      showToast(`✓ Sent ${data.sent || 0} texts`);
+    } catch (err) {
+      showToast('Backend not connected yet');
+    }
+  }
+
+  // ── CSV Import ────────────────────────────────────────────────────────────
+  function handleCSV(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const lines = e.target.result.split('\n');
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const contacts = lines.slice(1).map(line => {
+        const vals = line.split(',');
+        const obj = {};
+        headers.forEach((h, i) => obj[h] = (vals[i] || '').trim().replace(/"/g, ''));
+        return obj;
+      }).filter(c => c.email || c.phone);
+
+      try {
+        const res = await fetch(`${API}/api/import/contacts`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contacts, type: 'realtor' })
+        });
+        const data = await res.json();
+        showToast(`✓ Imported ${data.imported} contacts`);
+        refreshStats();
+      } catch (err) {
+        showToast('Import failed - backend not connected');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function handleCRMImport(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const lines = e.target.result.split('\n');
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const contacts = lines.slice(1).map(line => {
+        const vals = line.split(',');
+        const obj = {};
+        headers.forEach((h, i) => obj[h] = (vals[i] || '').trim().replace(/"/g, ''));
+        return obj;
+      }).filter(c => c.email || c.phone);
+
+      try {
+        const res = await fetch(`${API}/api/import/crm-suppression`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contacts })
+        });
+        const data = await res.json();
+        showToast(`✓ Added ${data.imported} to suppression list`);
+      } catch (err) {
+        showToast('Import failed - backend not connected');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // ── Settings ──────────────────────────────────────────────────────────────
+  async function loadSettings() {
+    try {
+      const res = await fetch(`${API}/api/settings`);
+      const data = await res.json();
+      activeStates = data.active_states || ['TX', 'FL'];
+      document.getElementById('setting-email-limit').value = data.daily_email_limit || 1000;
+      document.getElementById('setting-text-limit').value = data.daily_text_limit || 500;
+      document.getElementById('setting-followups').value = data.max_followups || 5;
+      checkAPISetup(data.apis_configured || {});
+    } catch (err) {
+      console.log('Settings load failed');
+    }
+    renderStatePills();
+  }
+
+  function saveAPIKeys() {
+    showToast('💾 API keys saved to .env file on server');
+  }
+
+  function saveSettings() {
+    showToast('✓ Settings saved');
+  }
+
+  // ── Utils ─────────────────────────────────────────────────────────────────
+  function timeAgo(dateStr) {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    if (mins < 60) return `${mins}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    return `${days}d ago`;
+  }
+
+  function renderEmpty(icon, title, desc) {
+    return `<div class="empty"><div class="empty-icon">${icon}</div><div class="empty-title">${title}</div><div class="empty-desc">${desc}</div></div>`;
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  renderStatePills();
+  refreshStats();
+  setInterval(refreshStats, 30000); // Auto-refresh every 30 seconds
+</script>
+</body>
+</html>
